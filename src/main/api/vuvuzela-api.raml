@@ -1,0 +1,177 @@
+#%RAML 1.0
+title: vuvuzela-api
+version: v1
+
+protocols: [ HTTPS ] 
+baseUri: localhost:443
+securitySchemes:
+  basic:
+    type: Basic Authentication
+    describedBy:
+      headers:
+        Authorization:
+          description: Used to send the Base64-encoded "username:password" credentials
+          type: string
+      responses:
+        401:
+          description: |
+            Unauthorized. Either the provided username and password
+            combination is invalid, or the user is not allowed to access
+            the content provided by the requested URL.
+
+types:
+  Order: !include ./dataTypes/order.raml
+  Customer: !include ./dataTypes/customer.raml
+
+
+/orders:
+    get:
+      description: Get all orders
+      responses:
+        200:
+          description: Returns an array of Orders
+          body:
+            application/json:
+              type: Order[]
+              examples: !include ./examples/orders.raml
+        400:
+          body:
+            application/json:
+              example:  {
+              "message": "Error retrieving data from the Order database."
+            }
+                
+                          
+    post:
+      description: Create order
+      securedBy: [basic]
+      body:
+        application/json:
+          description: Payload should be Order object with all required fields.
+          type: Order
+          examples: !include ./examples/order.raml
+      responses:
+        201:
+          body:
+            application/json:
+              example:  {
+              "message": "Order created successfully. Created at route https://localhost:8081/api/orders/{id}"
+            }
+        400:
+          body:
+            application/json:
+              example: {
+               "message": "Error creating order. Please check the JSON object and make sure it's valid."
+             }
+                
+    /{id}:
+      get:
+        description: Get specific order by ID
+        securedBy: [basic]
+        queryParameters:
+          response:
+            type: string  
+            enum: [full, orderonly]
+            required: true
+        responses:
+          200:
+            description: Returns a full or orderonly object based on Query Params
+            body:
+              application/json:
+                type: !include ./dataTypes/fullOrder.raml
+                examples: !include ./examples/fullOrder.raml
+          400:
+            body:
+              application/json:
+                example:  {
+                "message": "Error retrieving data from the Order database."
+              }
+
+/customers:
+  get:
+    description: Get all customers
+    responses:
+      200:
+        description: Returns an array of Customers
+        body:
+          application/json:
+            type: Customer[]
+            examples: !include ./examples/customers.raml
+      400:
+        body:
+          application/json:
+            example:  {
+            "message": "Error retrieving data from the Order database."
+          }
+
+  post:
+      description: Create customer
+      securedBy: [basic]
+      body:
+        application/json:
+          description: Payload should be Customer object with all required fields.
+          type: Customer
+          examples: !include ./examples/customer.raml
+      responses:
+        201:
+          body:
+            application/json:
+              example:  {
+              "message": "Order created successfully. Created at route https://localhost:8081/api/customers/{id}"
+            }
+        400:
+          body:
+            application/json:
+              example: {
+               "message": "Error creating order. Please check the JSON object and make sure it's valid."
+             }
+  /{id}:
+    get:
+        description: Get specific customer by ID
+        securedBy: [basic]
+        responses:
+          200:
+            description: Returns customer object.
+            body:
+              application/json:
+                type: !include ./dataTypes/customer.raml
+                examples: !include ./examples/customer.raml
+          400:
+            body:
+              application/json:
+                example:  {
+                "message": "Error retrieving data from the Order database."
+              }
+    put:
+        description: Update specific customer by ID
+        securedBy: [basic]
+        responses:
+          200:
+            description: Update customer.
+            body:
+              application/json:
+                type: !include ./dataTypes/customer.raml
+                examples: !include ./examples/customer.raml
+          400:
+            body:
+              application/json:
+                example:  {
+                "message": "Error retrieving data from the Order database."
+              }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              

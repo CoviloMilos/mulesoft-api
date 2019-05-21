@@ -1,0 +1,14 @@
+#%RAML 1.0 DataType
+type: object
+description: Data Type of FullOrder object
+properties:
+  customer: 
+    type: !include customer.raml
+  customerName:
+    type: string
+    required: false
+  vuvuzelaType:
+    type: string
+    enum: [A, B, C]
+  vuvuzelaAmount:
+    type: integer

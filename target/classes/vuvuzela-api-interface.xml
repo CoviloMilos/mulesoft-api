@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:mule-ss="http://www.mulesoft.org/schema/mule/spring-security"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+    
+    <flow name="vuvuzela-api-main">
+        <http:listener config-ref="httpListner" path="/api/*" doc:name="HTTP"/>
+        <mule-ss:http-security-filter realm="mule-realm"
+			securityProviders="memory-provider" />
+        <apikit:router config-ref="vuvuzela-api-config" doc:name="APIkit Router"/>
+        <exception-strategy ref="apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
+    </flow>
+    <flow name="vuvuzela-api-console">
+        <http:listener config-ref="httpListner" path="/console/*" doc:name="HTTP"/>
+        <apikit:console config-ref="vuvuzela-api-config" doc:name="APIkit Console"/>
+    </flow>
+    <flow name="put:/customers/{id}:vuvuzela-api-config">
+        <set-payload value="{&#xA;&quot;customerID&quot; : 1,&#xA;&quot;customerName&quot; : &quot;John&quot;,&#xA;&quot;customerSurname&quot; : &quot;Wick&quot;&#xA;}" doc:name="Set Payload"/>
+    </flow>
+    <flow name="get:/customers:vuvuzela-api-config">
+        <set-payload value="[&#xA;{&#xA;&quot;customerID&quot; : 1,&#xA;&quot;customerName&quot; : &quot;John&quot;,&#xA;&quot;customerSurname&quot; : &quot;Wick&quot;&#xA;},&#xA;{&#xA;&quot;customerID&quot; : 2,&#xA;&quot;customerName&quot; : &quot;Mark&quot;,&#xA;&quot;customerSurname&quot; : &quot;SomeMark&quot;&#xA;}&#xA;]" doc:name="Set Payload"/>
+    </flow>
+    <flow name="get:/orders:vuvuzela-api-config">
+        <set-payload value="[&#xA;{&#xA;&quot;customerID&quot; : 1,&#xA;&quot;customerName&quot; : &quot;John&quot;,&#xA;&quot;vuvuzelaType&quot; : &quot;A&quot;,&#xA;&quot;vuvuzelaAmount&quot; : 300&#xA;},&#xA;{&#xA;&quot;customerID&quot; : 2,&#xA;&quot;customerName&quot; : &quot;Mark&quot;,&#xA;&quot;vuvuzelaType&quot; : &quot;B&quot;,&#xA;&quot;vuvuzelaAmount&quot; : 100&#xA;},&#xA;{&#xA;&quot;customerID&quot; : 3,&#xA;&quot;customerName&quot; : &quot;Joe&quot;,&#xA;&quot;vuvuzelaType&quot; : &quot;C&quot;,&#xA;&quot;vuvuzelaAmount&quot; : 500&#xA;}&#xA;]" doc:name="Set Payload"/>
+    </flow>
+    <flow name="get:/orders/{id}:vuvuzela-api-config">
+        <set-payload value="{&#xA;&quot;customer&quot; : {&#xA;&quot;customerID&quot; : 1,&#xA;&quot;customerName&quot; : &quot;John&quot;,&#xA;&quot;customerSurname&quot; : &quot;Wick&quot;&#xA;},&#xA;&quot;vuvuzelaType&quot; : &quot;A&quot;,&#xA;&quot;vuvuzelaAmount&quot; : 100&#xA;}" doc:name="Set Payload"/>
+    </flow>
+    <flow name="get:/customers/{id}:vuvuzela-api-config">
+        <set-payload value="{&#xA;&quot;customerID&quot; : 1,&#xA;&quot;customerName&quot; : &quot;John&quot;,&#xA;&quot;customerSurname&quot; : &quot;Wick&quot;&#xA;}" doc:name="Set Payload"/>
+    </flow>
+    <flow name="post:/customers:application/json:vuvuzela-api-config">
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+        <set-payload value="{&#xA;&quot;message&quot; : &quot;Order created successfully. Created at route https://localhost:8081/api/customers/{id}&quot;&#xA;}" doc:name="Set Payload"/>
+    </flow>
+    <flow name="post:/orders:application/json:vuvuzela-api-config">
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+        <set-payload value="{&#xA;&quot;message&quot; : &quot;Order created successfully. Created at route https://localhost:8081/api/orders/{id}&quot;&#xA;}" doc:name="Set Payload"/>
+    </flow>
+    
+</mule>
